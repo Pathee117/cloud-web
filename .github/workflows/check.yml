@@ -54,6 +54,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo docker pull patheex117/cloud-web:latest
-            sudo docker stop cloud-web || true
-            sudo docker rm cloud-web || true
-            sudo docker run -d --name cloud-web -p 8080:80 patheex117/cloud-web:latest
+            OLD_CONTAINER=$(sudo docker ps -q --filter "publish=8080")
+  if [ -n "$OLD_CONTAINER" ]; then
+    sudo docker stop $OLD_CONTAINER
+    sudo docker rm $OLD_CONTAINER
+  fi
+  sudo docker run -d --name cloud-web -p 8080:80 patheex117/cloud-web:latest
